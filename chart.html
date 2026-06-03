@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Most LGBTQ+-Inclusive Sports Cities — Vegas Insider</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #fff;
+    color: #1a1a1a;
+  }
+
+  .header {
+    background: #24324A;
+  }
+
+  .shimmer-bar {
+    height: 4px;
+    background: linear-gradient(90deg, #24324A 0%, #B6842D 30%, #e8c97a 50%, #B6842D 70%, #24324A 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2.8s infinite linear;
+  }
+
+  @keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .header-inner {
+    padding: 16px 20px 15px;
+  }
+
+  .header-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.35;
+  }
+
+  .header-sub {
+    font-size: 11px;
+    color: #8fa0b0;
+    margin-top: 3px;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    background: #f5f2ec;
+    border-bottom: 2px solid #E7E2D8;
+    padding: 0 20px;
+    gap: 0;
+  }
+
+  .tab {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    cursor: pointer;
+    color: #aaa;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .tab:hover { color: #24324A; }
+
+  .tab.active {
+    color: #B6842D;
+    border-bottom-color: #B6842D;
+  }
+
+  /* CHART */
+  .chart-wrap {
+    padding: 16px 20px 12px;
+    background: #f5f2ec;
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+  }
+
+  .rank-num {
+    font-size: 10px;
+    font-weight: 700;
+    color: #bbb;
+    width: 18px;
+    text-align: right;
+    flex-shrink: 0;
+    line-height: 24px;
+  }
+
+  .rank-num.gold { color: #B6842D; }
+
+  .city-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #24324A;
+    width: 108px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 24px;
+  }
+
+  .bar-track {
+    flex: 1;
+    background: #e0dcd4;
+    border-radius: 3px;
+    height: 22px;
+    position: relative;
+    /* right margin so value label doesn't get clipped */
+    margin-right: 38px;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    min-width: 2px;
+  }
+
+  .bar-value {
+    position: absolute;
+    left: calc(100% + 6px);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    font-weight: 700;
+    color: #555;
+    white-space: nowrap;
+  }
+
+  /* FOOTER */
+  .footer {
+    padding: 10px 20px 13px;
+    background: #fff;
+    border-top: 1px solid #E7E2D8;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+  }
+
+  .footer-note {
+    font-size: 10px;
+    color: #bbb;
+    line-height: 1.55;
+  }
+
+  .footer-brand {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    color: #24324A;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .footer-brand span { color: #B6842D; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="shimmer-bar"></div>
+  <div class="header-inner">
+    <div class="header-title">The Most LGBTQ+-Inclusive Sports Cities in America</div>
+    <div class="header-sub">Top 20 ranked cities · Pride Month 2025 · Vegas Insider</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-key="overall" data-max="100">Overall Score</div>
+  <div class="tab" data-key="pride" data-max="40">Pride Visibility</div>
+  <div class="tab" data-key="inclusion" data-max="35">Inclusion Actions</div>
+</div>
+
+<div class="chart-wrap" id="chart"></div>
+
+<div class="footer">
+  <div class="footer-note">
+    Source: ESPN, Outsports, TickPick, Federation of Gay Games · Data window: 2022–2024<br>
+    Scores are provisional — community infrastructure data (15% of model) still being collected
+  </div>
+  <div class="footer-brand">VEGAS <span>INSIDER</span></div>
+</div>
+
+<script>
+const cities = [
+  { rank:1,  city:"San Francisco", overall:66.7, pride:6.7,  inclusion:30.0 },
+  { rank:2,  city:"Los Angeles",   overall:51.9, pride:33.7, inclusion:10.5 },
+  { rank:3,  city:"Chicago",       overall:51.0, pride:35.0, inclusion:0.0  },
+  { rank:4,  city:"New York City", overall:50.8, pride:20.2, inclusion:14.7 },
+  { rank:5,  city:"Washington DC", overall:49.4, pride:26.9, inclusion:8.4  },
+  { rank:6,  city:"Seattle",       overall:47.7, pride:26.9, inclusion:7.0  },
+  { rank:7,  city:"Boston",        overall:43.7, pride:13.5, inclusion:19.5 },
+  { rank:8,  city:"Houston",       overall:31.1, pride:20.2, inclusion:6.3  },
+  { rank:9,  city:"Phoenix",       overall:27.3, pride:13.5, inclusion:9.8  },
+  { rank:10, city:"Atlanta",       overall:27.1, pride:18.8, inclusion:0.0  },
+  { rank:11, city:"Minneapolis",   overall:27.0, pride:13.5, inclusion:2.8  },
+  { rank:12, city:"San Diego",     overall:24.7, pride:13.5, inclusion:0.0  },
+  { rank:13, city:"Miami",         overall:24.3, pride:6.7,  inclusion:9.8  },
+  { rank:14, city:"Kansas City",   overall:23.8, pride:20.2, inclusion:0.0  },
+  { rank:15, city:"Denver",        overall:23.0, pride:6.7,  inclusion:2.8  },
+  { rank:16, city:"Las Vegas",     overall:21.9, pride:6.7,  inclusion:11.9 },
+  { rank:17, city:"Dallas",        overall:19.1, pride:13.5, inclusion:2.8  },
+  { rank:18, city:"Charlotte",     overall:16.1, pride:6.7,  inclusion:7.0  },
+  { rank:19, city:"Philadelphia",  overall:15.8, pride:13.5, inclusion:0.0  },
+  { rank:20, city:"Portland",      overall:15.8, pride:13.5, inclusion:0.0  }
+];
+
+let activeKey = "overall";
+let activeMax = 100;
+
+function barColor(rank) {
+  // Gradient from dark navy (rank 1) to lighter (rank 20)
+  const t = (rank - 1) / 19;
+  // Interpolate: #24324A → #7a8fa3
+  const r = Math.round(36  + t * (122 - 36));
+  const g = Math.round(50  + t * (143 - 50));
+  const b = Math.round(74  + t * (163 - 74));
+  return `rgb(${r},${g},${b})`;
+}
+
+function render(key, max, animate) {
+  const sorted = [...cities].sort((a, b) => b[key] - a[key]);
+  const wrap = document.getElementById("chart");
+  wrap.innerHTML = "";
+
+  sorted.forEach((d, i) => {
+    const globalRank = i + 1;
+    const pct = max > 0 ? (d[key] / max) * 100 : 0;
+
+    const row = document.createElement("div");
+    row.className = "bar-row";
+
+    const rankEl = document.createElement("div");
+    rankEl.className = "rank-num" + (globalRank <= 3 ? " gold" : "");
+    rankEl.textContent = globalRank;
+
+    const nameEl = document.createElement("div");
+    nameEl.className = "city-label";
+    nameEl.textContent = d.city;
+
+    const track = document.createElement("div");
+    track.className = "bar-track";
+
+    const fill = document.createElement("div");
+    fill.className = "bar-fill";
+    fill.style.background = barColor(globalRank);
+    fill.style.width = animate ? "0%" : Math.max(pct, 0.5) + "%";
+
+    const val = document.createElement("div");
+    val.className = "bar-value";
+    val.textContent = d[key].toFixed(1);
+
+    track.appendChild(fill);
+    track.appendChild(val);
+    row.appendChild(rankEl);
+    row.appendChild(nameEl);
+    row.appendChild(track);
+    wrap.appendChild(row);
+
+    if (animate) {
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          fill.style.width = Math.max(pct, 0.5) + "%";
+        }, i * 18);
+      });
+    }
+  });
+}
+
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", function() {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    this.classList.add("active");
+    activeKey = this.dataset.key;
+    activeMax = parseFloat(this.dataset.max);
+    render(activeKey, activeMax, true);
+  });
+});
+
+render("overall", 100, true);
+</script>
+</body>
+</html>
