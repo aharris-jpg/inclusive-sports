@@ -13,25 +13,30 @@
     color: #1a1a1a;
   }
 
-  .header {
-    background: #24324A;
-  }
+  .header { background: #24324A; }
 
   .shimmer-bar {
-    height: 4px;
-    background: linear-gradient(90deg, #24324A 0%, #B6842D 30%, #e8c97a 50%, #B6842D 70%, #24324A 100%);
+    height: 5px;
+    background: linear-gradient(
+      90deg,
+      #E40303 0%, #E40303 14%,
+      #FF8C00 14%, #FF8C00 28%,
+      #FFED00 28%, #FFED00 42%,
+      #008026 42%, #008026 57%,
+      #004DFF 57%, #004DFF 71%,
+      #750787 71%, #750787 85%,
+      #E40303 85%, #E40303 100%
+    );
     background-size: 200% 100%;
-    animation: shimmer 2.8s infinite linear;
+    animation: pride-shimmer 3s infinite linear;
   }
 
-  @keyframes shimmer {
-    0%   { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+  @keyframes pride-shimmer {
+    0%   { background-position: 0% 0; }
+    100% { background-position: 200% 0; }
   }
 
-  .header-inner {
-    padding: 16px 20px 15px;
-  }
+  .header-inner { padding: 16px 20px 15px; }
 
   .header-title {
     font-size: 14px;
@@ -46,13 +51,11 @@
     margin-top: 3px;
   }
 
-  /* TABS */
   .tabs {
     display: flex;
     background: #f5f2ec;
     border-bottom: 2px solid #E7E2D8;
     padding: 0 20px;
-    gap: 0;
   }
 
   .tab {
@@ -71,13 +74,8 @@
   }
 
   .tab:hover { color: #24324A; }
+  .tab.active { color: #B6842D; border-bottom-color: #B6842D; }
 
-  .tab.active {
-    color: #B6842D;
-    border-bottom-color: #B6842D;
-  }
-
-  /* CHART */
   .chart-wrap {
     padding: 16px 20px 12px;
     background: #f5f2ec;
@@ -93,14 +91,14 @@
   .rank-num {
     font-size: 10px;
     font-weight: 700;
-    color: #bbb;
+    color: #B6842D;
     width: 18px;
     text-align: right;
     flex-shrink: 0;
     line-height: 24px;
   }
 
-  .rank-num.gold { color: #B6842D; }
+  .rank-num.dim { color: #bbb; }
 
   .city-label {
     font-size: 12px;
@@ -120,7 +118,6 @@
     border-radius: 3px;
     height: 22px;
     position: relative;
-    /* right margin so value label doesn't get clipped */
     margin-right: 38px;
   }
 
@@ -143,7 +140,6 @@
     white-space: nowrap;
   }
 
-  /* FOOTER */
   .footer {
     padding: 10px 20px 13px;
     background: #fff;
@@ -193,7 +189,7 @@
 <div class="footer">
   <div class="footer-note">
     Source: ESPN, Outsports, TickPick, Federation of Gay Games · Data window: 2022–2024<br>
-    Scores are provisional — community infrastructure data (15% of model) still being collected
+    Scores provisional — community infrastructure data (15% of model) still being collected
   </div>
   <div class="footer-brand">VEGAS <span>INSIDER</span></div>
 </div>
@@ -222,49 +218,45 @@ const cities = [
   { rank:20, city:"Portland",      overall:15.8, pride:13.5, inclusion:0.0  }
 ];
 
-let activeKey = "overall";
-let activeMax = 100;
-
-function barColor(rank) {
-  // Gradient from dark navy (rank 1) to lighter (rank 20)
-  const t = (rank - 1) / 19;
-  // Interpolate: #24324A → #7a8fa3
-  const r = Math.round(36  + t * (122 - 36));
-  const g = Math.round(50  + t * (143 - 50));
-  const b = Math.round(74  + t * (163 - 74));
+function barColor(index) {
+  // Clean navy fade — darkest at #1, lightens toward #20
+  const t = index / 19;
+  const r = Math.round(36  + t * (100 - 36));
+  const g = Math.round(50  + t * (120 - 50));
+  const b = Math.round(74  + t * (160 - 74));
   return `rgb(${r},${g},${b})`;
 }
 
 function render(key, max, animate) {
   const sorted = [...cities].sort((a, b) => b[key] - a[key]);
-  const wrap = document.getElementById("chart");
-  wrap.innerHTML = "";
+  const wrap = document.getElementById('chart');
+  wrap.innerHTML = '';
 
   sorted.forEach((d, i) => {
     const globalRank = i + 1;
     const pct = max > 0 ? (d[key] / max) * 100 : 0;
 
-    const row = document.createElement("div");
-    row.className = "bar-row";
+    const row = document.createElement('div');
+    row.className = 'bar-row';
 
-    const rankEl = document.createElement("div");
-    rankEl.className = "rank-num" + (globalRank <= 3 ? " gold" : "");
+    const rankEl = document.createElement('div');
+    rankEl.className = 'rank-num' + (globalRank > 3 ? ' dim' : '');
     rankEl.textContent = globalRank;
 
-    const nameEl = document.createElement("div");
-    nameEl.className = "city-label";
+    const nameEl = document.createElement('div');
+    nameEl.className = 'city-label';
     nameEl.textContent = d.city;
 
-    const track = document.createElement("div");
-    track.className = "bar-track";
+    const track = document.createElement('div');
+    track.className = 'bar-track';
 
-    const fill = document.createElement("div");
-    fill.className = "bar-fill";
-    fill.style.background = barColor(globalRank);
-    fill.style.width = animate ? "0%" : Math.max(pct, 0.5) + "%";
+    const fill = document.createElement('div');
+    fill.className = 'bar-fill';
+    fill.style.background = barColor(i);
+    fill.style.width = animate ? '0%' : Math.max(pct, 0.5) + '%';
 
-    const val = document.createElement("div");
-    val.className = "bar-value";
+    const val = document.createElement('div');
+    val.className = 'bar-value';
     val.textContent = d[key].toFixed(1);
 
     track.appendChild(fill);
@@ -277,24 +269,22 @@ function render(key, max, animate) {
     if (animate) {
       requestAnimationFrame(() => {
         setTimeout(() => {
-          fill.style.width = Math.max(pct, 0.5) + "%";
-        }, i * 18);
+          fill.style.width = Math.max(pct, 0.5) + '%';
+        }, i * 20);
       });
     }
   });
 }
 
-document.querySelectorAll(".tab").forEach(tab => {
-  tab.addEventListener("click", function() {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    this.classList.add("active");
-    activeKey = this.dataset.key;
-    activeMax = parseFloat(this.dataset.max);
-    render(activeKey, activeMax, true);
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    render(this.dataset.key, parseFloat(this.dataset.max), true);
   });
 });
 
-render("overall", 100, true);
+render('overall', 100, true);
 </script>
 </body>
 </html>
